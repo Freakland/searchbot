@@ -1,6 +1,7 @@
 var express = require('express'),
     router = express.Router(),
-    request = require('request');
+    request = require('request'),
+    _ = require('underscore');
 
 router.get('/', function(req, res, next) {
 
@@ -11,8 +12,21 @@ router.get('/', function(req, res, next) {
             key: 'AIzaSyC9HV5iELexKdY2MHESpgPzUTTlX_QrC5A',
             cx: '014906677786528070915:sonnet7alpa'
         }
-    }, function(err, request, result) {
-        return res.json({results: result.items});
+    }, function(_err, _req, _res) {
+        _res = JSON.parse(_res);
+        var results = _res.items || [];
+
+        return res.json({
+            ok: true,
+            username: 'SearchBot',
+            attachments: _.map(results, function(item) {
+                return {
+                    title: item.title,
+                    title_link: item.link,
+                    text: item.snippet
+                };
+            })
+        });
     });
 
 });
